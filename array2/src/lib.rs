@@ -15,7 +15,7 @@ impl<T: Clone> Array2<T> {
     /// * `width`: the width of the `Array2`.
     /// * `height`: the height of the `Array2`
     /// * `arr`: the 2D array from which to map into the vector
-    pub fn new(width: usize, height: usize) -> Self {
+    pub fn new(width: usize, height: usize, val: T) -> Array2<T> {
         // error checking for at least the dimensions of the 2D array matching the provided width and height
         // assign the width and height attributes to the parameters given
         // take the width * height to find the length of the vector
@@ -24,7 +24,7 @@ impl<T: Clone> Array2<T> {
         Array2 {
             width,
             height,
-            data,
+            data: vec![val; width * height],
         }
     }
 
