@@ -33,7 +33,9 @@ impl<T: Clone> Array2<T> {
     /// # Arguments
     ///
     /// * `arr`: the 2D array from which to map into the vector
-    pub fn from_row_major(arr: &[&[T]]) -> Self {
+    pub fn from_row_major(data: Vec<T>, width: usize, height: usize) -> Array2<T> {
+        assert_eq!(data.len(), width * height);
+        Array2 { width, height, data }
         // read through 'arr' and map each element to the vector
 
         // use this formula: row * width + col, where row and col are indices
@@ -43,11 +45,7 @@ impl<T: Clone> Array2<T> {
         /// every element in the 2D array will be mapped to an element in our
         /// data vector based on its row and column indexes.
 
-        Array2 {
-            width,
-            height,
-            data,
-        }
+       
     }
 
     /// Takes the elements from the 2D array in column-major order and maps to the data vec
