@@ -2,9 +2,9 @@ use std::vec::Vec;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Array2<T: Clone> {
-    width: usize,
-    height: usize,
-    data: Vec<T>,
+    pub width: usize,
+    pub height: usize,
+    pub data: Vec<T>,
 }
 
 impl<T: Clone> Array2<T> {
@@ -28,6 +28,13 @@ impl<T: Clone> Array2<T> {
         }
     }
 
+    pub fn print<F: std::fmt::Debug>(data: Vec<F>){
+        for x in data{
+            println!("{:?}", x);
+        }
+    }
+
+    /*
     /// Takes the elements from the 2D array in row-major order and maps to the data vec
     ///
     /// # Arguments
@@ -112,11 +119,6 @@ impl<T: Clone> Array2<T> {
         // calculate the index in row-major order based on the specified (row, col)
         // set the value from that index in the vec
     }
-    pub fn print(data: Vec<T>){
-        for x in data{
-            println!("{:?}",x)
-        }
-    }
 
     /// Returns an iterator that iterates over the elements in the vector in row-major order
     pub fn iter_row_major(&self) -> std::slice::Iter<T> {
@@ -127,5 +129,5 @@ impl<T: Clone> Array2<T> {
     pub fn iter_col_major() {
         // uses a step in the iterator to skip the over width of the array
         // each step and increase the initial position in the step each outer-iteration
-    }
+    }*/
 }
