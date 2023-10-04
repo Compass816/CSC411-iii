@@ -112,6 +112,11 @@ impl<T: Clone> Array2<T> {
         // calculate the index in row-major order based on the specified (row, col)
         // set the value from that index in the vec
     }
+    pub fn print(data: Vec<T>){
+        for x in data{
+            println!("{:?}",x)
+        }
+    }
 
     /// Returns an iterator that iterates over the elements in the vector in row-major order
     pub fn iter_row_major(&self) -> std::slice::Iter<T> {
