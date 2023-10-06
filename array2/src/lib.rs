@@ -1,133 +1,90 @@
-use std::vec::Vec;
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Array2<T: Clone> {
-    pub width: usize,
-    pub height: usize,
-    pub data: Vec<T>,
+pub struct Array2<T> {
+    width: usize,
+    height: usize,
+    data: Vec<T>,
 }
 
 impl<T: Clone> Array2<T> {
-    /// Creates a new `Array2`.
-    ///
-    /// # Arguments
-    ///
-    /// * `width`: the width of the `Array2`.
-    /// * `height`: the height of the `Array2`
-    /// * `arr`: the 2D array from which to map into the vector
-    pub fn new(width: usize, height: usize, val: T) -> Array2<T> {
-        // error checking for at least the dimensions of the 2D array matching the provided width and height
-        // assign the width and height attributes to the parameters given
-        // take the width * height to find the length of the vector
-        // create the vec (data)
-        // return an Array2 instance with the initialized data vector
-        Array2 {
-            width,
-            height,
-            data: vec![val; width * height],
+    // Row Major constructor
+    pub fn from_row_major(
+        width: usize,
+        height: usize,
+        elements: Vec<T>,
+    ) -> Result<Self, &'static str> {
+        if elements.len() != width * height {
+            return Err("Invalid number of elements");
         }
-    }
 
-    pub fn print<F: std::fmt::Debug>(data: Vec<F>){
-        for x in data{
-            println!("{:?}", x);
+        let mut data = Vec::with_capacity(width * height);
+
+        for y in 0..height {
+            for x in 0..width {
+                let index = y * width + x;
+                data.push(elements[index].clone());
+            }
         }
-    }
 
-    /*
-    /// Takes the elements from the 2D array in row-major order and maps to the data vec
-    ///
-    /// # Arguments
-    ///
-    /// * `arr`: the 2D array from which to map into the vector
-    pub fn from_row_major(data: Vec<T>, width: usize, height: usize) -> Array2<T> {
-        assert_eq!(data.len(), width * height);
-        Array2 { width, height, data }
-        // read through 'arr' and map each element to the vector
-
-        // use this formula: row * width + col, where row and col are indices
-        // and width is the width of the 2D array
-
-        /// Invariant satisfied:
-        /// every element in the 2D array will be mapped to an element in our
-        /// data vector based on its row and column indexes.
-
-       
-    }
-
-    /// Takes the elements from the 2D array in column-major order and maps to the data vec
-    ///
-    /// # Arguments
-    ///
-    /// * `arr`: the 2D array from which to map into the vector
-    pub fn from_col_major(arr: &[&[T]]) -> Self {
-        // read through 'arr' and map each element to the vector
-
-        // use this formula: col * height + row, where row and col are indices
-        // and height is the height of the 2D array
-
-        /// Invariant satisfied:
-        /// every element in the 2D array will be mapped to an element in our
-        /// data vector based on its row and column indexes.
-
-        Array2 {
+        Ok(Self {
             width,
             height,
             data,
-        }
+        })
     }
 
-    /// Creates a default Array2, where each element is set to a specified `value`
-    ///
-    /// # Arguments
-    ///
-    /// * `width`: the width of the `Array2`.
-    /// * `height`: the height of the `Array2`
-    /// * `arr`: the 2D array from which to map into the vector
-    pub fn blank_state(width: usize, height: usize) -> Self {
-        // error checking for at least the dimensions of the 2D array matching the provided width and height
-        // assign the width and height attributes to the parameters given
-        // take the width * height to find the length of the vector
-        // create the vec (data) width a set default value for each element
-        Array2 {
+    // Col-major constructor
+    pub fn from_col_major(
+        width: usize,
+        height: usize,
+        elements: Vec<T>,
+    ) -> Result<Self, &'static str> {
+        if elements.len() != width * height {
+            return Err("Invalid number of elements");
+        }
+
+        let mut data = Vec::with_capacity(width * height);
+
+        for y in 0..width {
+            for x in 0..height {
+                let index = y * width + x;
+                data.push(elements[index].clone());
+            }
+        }
+
+        Ok(Self {
             width,
             height,
             data,
-        }
+        })
     }
 
-    /// Retries the value for an element in the vec at the specified (row, col)
-    ///
-    /// # Arguments
-    ///
-    /// * `row`: row index in the 2D array
-    /// * `col`: col index n the 2D array
-    pub fn get(&self, row: usize, col: usize) -> Option<&T> {
-        // error checking if the row and col are within bounds of the width and height
-        // calculate the index in row-major order based on the specified (row, col)
-        // get the value from that index in the vec
+    // iterates over the rows
+    pub fn iter_row_major(&self) -> impl Iterator<Item = (usize, usize, &T)> {
+        (0..self.height).flat_map(move |y| (0..self.width).map(move |x| (x, y, self.get(x, y))))
     }
 
-    /// Sets the value for an element in the vec at the specified (row, col)
-    ///
-    /// # Arguments
-    ///
-    /// * `row`: row index in the 2D array
-    /// * `col`: col index n the 2D array
-    pub fn set(&mut self, row: usize, col: usize, value: T) {
-        // error checking if the row and col are within bounds of the width and height
-        // calculate the index in row-major order based on the specified (row, col)
-        // set the value from that index in the vec
+    //iterates over the columns
+
+    pub fn iter_col_major(&self) -> impl Iterator<Item = (usize, usize, &T)> {
+        (0..self.width)
+            .map(move |c| (c, self.data.iter().skip(c)))
+            .flat_map(move |(c, col)| {
+                col.step_by(self.width)
+                    .enumerate()
+                    .map(move |(r, val)| (c, r, val))
+            })
     }
 
-    /// Returns an iterator that iterates over the elements in the vector in row-major order
-    pub fn iter_row_major(&self) -> std::slice::Iter<T> {
-        // simply iterates over one-by-one across the vector
+    //function to get index from pair of coordinates
+    pub fn get(&self, x: usize, y: usize) -> &T {
+        assert!(x < self.width);
+        assert!(y < self.height);
+        &self.data[x + y * self.width]
+    }
+    pub fn width(&self) -> usize {
+        self.width
     }
 
-    /// Returns an iterator that iterates over the elements in the vector in column-major order
-    pub fn iter_col_major() {
-        // uses a step in the iterator to skip the over width of the array
-        // each step and increase the initial position in the step each outer-iteration
-    }*/
+    pub fn height(&self) -> usize {
+        self.height
+    }
 }
