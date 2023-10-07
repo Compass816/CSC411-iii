@@ -6,11 +6,7 @@ pub struct Array2<T> {
 
 impl<T: Clone> Array2<T> {
     // Row Major constructor
-    pub fn from_row_major(
-        width: usize,
-        height: usize,
-        elements: Vec<T>,
-    ) -> Result<Self, &'static str> {
+    pub fn from_row_major(width: usize, height: usize, elements: Vec<T>,) -> Result<Self, &'static str> {
         if elements.len() != width * height {
             return Err("Invalid number of elements");
         }
@@ -32,11 +28,7 @@ impl<T: Clone> Array2<T> {
     }
 
     // Col-major constructor
-    pub fn from_col_major(
-        width: usize,
-        height: usize,
-        elements: Vec<T>,
-    ) -> Result<Self, &'static str> {
+    pub fn from_col_major(width: usize, height: usize, elements: Vec<T>,) -> Result<Self, &'static str> {
         if elements.len() != width * height {
             return Err("Invalid number of elements");
         }
@@ -56,6 +48,18 @@ impl<T: Clone> Array2<T> {
             data,
         })
     }
+  
+    // 
+    pub fn blank_state(width: usize, height: usize, val: T) -> Self {
+        let data = vec![val; width * height];
+
+        Self {
+            width,
+            height,
+            data,
+        }
+    }
+
 
     // iterates over the rows
     pub fn iter_row_major(&self) -> impl Iterator<Item = (usize, usize, &T)> {
@@ -63,7 +67,6 @@ impl<T: Clone> Array2<T> {
     }
 
     //iterates over the columns
-
     pub fn iter_col_major(&self) -> impl Iterator<Item = (usize, usize, &T)> {
         (0..self.width)
             .map(move |c| (c, self.data.iter().skip(c)))
@@ -80,6 +83,7 @@ impl<T: Clone> Array2<T> {
         assert!(y < self.height);
         &self.data[x + y * self.width]
     }
+
     pub fn width(&self) -> usize {
         self.width
     }
