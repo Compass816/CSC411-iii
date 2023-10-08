@@ -40,7 +40,11 @@ fn valid_sudoku(board: &Array2<usize>) -> bool {
         let mut row_set = [false; 9];
         let mut col_set = [false; 9];
     // Loop through the board with our iter_row function 
-        for (x, y, &value) in board.iter_row_major().filter(|&(_, _, &v)| v != 0) {
+        for (x, y, &value) in board.iter_row_major() {
+    // if the value is zero- invalid sudoku (return false)
+            if value == 0{
+                return false;
+            }
             if y == i {
     // if the number in the spot is set to true, that means the number has already been seen, so return false
                 if row_set[value - 1] {
@@ -68,7 +72,9 @@ fn valid_sudoku(board: &Array2<usize>) -> bool {
         }
     }
 
-    true // If all checks pass, the Sudoku is valid and we return true
+    // If all checks pass, the Sudoku is valid and we return true
+
+    true
 }
 
 fn valid_subgrid(board: &Array2<usize>, start_row: usize, start_col: usize) -> bool {
