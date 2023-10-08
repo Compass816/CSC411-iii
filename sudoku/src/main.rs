@@ -42,11 +42,11 @@ fn valid_sudoku(board: &Array2<usize>) -> bool {
     // Loop through the board with our iter_row function 
         for (x, y, &value) in board.iter_row_major().filter(|&(_, _, &v)| v != 0) {
             if y == i {
-    // if the number in the spot is set to true, that means the number has already been seen, so set to false
+    // if the number in the spot is set to true, that means the number has already been seen, so return false
                 if row_set[value - 1] {
                     return false; // Duplicate value in the same row
                 }
-    // set to true, because if it is seen again it will get flagged
+    // set value to true, because if it is seen again it will get flagged
                 row_set[value - 1] = true;
             }
     // repeat above process but with column values
